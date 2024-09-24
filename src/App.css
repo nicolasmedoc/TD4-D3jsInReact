@@ -1,0 +1,10 @@
+.App {
+    text-align: center;
+    height: 100%;
+}
+#control-bar-container{
+    height: 10%;
+}
+#view-container{
+    height:100%;
+}
