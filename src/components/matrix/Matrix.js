@@ -1,18 +1,14 @@
 import './Matrix.css'
-import { getDefaultFontSize} from '../../utils/helper';
-import { useEffect, useContext, useRef } from 'react';
-import { MatrixConfigDispatchContext } from '../../reducers/MatrixConfigContext';
-import { MatrixDataContext, MatrixDataDispatchContext } from '../../reducers/MatrixDataContext';
+import { useEffect, useRef } from 'react';
+import {useSelector, useDispatch} from 'react-redux'
+import { updateSelectedItem } from '../../redux/MatrixSlice';
+import { updateHoveredCell } from '../../redux/ConfigSlice';
+
 import MatrixD3 from './Matrix-d3';
 
-const cellSize= 34;
-const fontSize=getDefaultFontSize()
-
-
 function Matrix(){
-    const matrixData = useContext(MatrixDataContext);
-    const dataDispatch = useContext(MatrixDataDispatchContext)
-    const configDispatch = useContext(MatrixConfigDispatchContext)
+    const matrixData = useSelector(state =>state.matrix)
+    const dispatch = useDispatch();
 
     useEffect(()=>{
         console.log("Matrix useEffect (called each time matrix re-renders)");
@@ -45,13 +41,13 @@ function Matrix(){
         const matrixD3 = matrixD3Ref.current;
 
         const handleOnClick = function(cellData){
-            dataDispatch({type:"updateSelectedItem", cellData})
+            dispatch(updateSelectedItem(cellData));
         }
         const handleOnMouseEnter = function(cellData){
-            configDispatch({type:"updateHoveredCell", hoveredCell:cellData})
+            dispatch(updateHoveredCell(cellData))
         }
         const handleOnMouseLeave = function(){
-            configDispatch({type:"updateHoveredCell", hoveredCell:{}})
+            dispatch(updateHoveredCell({}))
         }
         const controllerMethods={
             handleOnClick,
@@ -59,7 +55,7 @@ function Matrix(){
             handleOnMouseLeave
         }
         matrixD3.renderMatrix(matrixData,controllerMethods);
-    },[matrixData,dataDispatch,configDispatch]);// if dependencies, useEffect is called after each data update, in our case only matrixData changes.
+    },[matrixData,dispatch]);// if dependencies, useEffect is called after each data update, in our case only matrixData changes.
 
     return(
         <div ref={divContainerRef} className="matrixDivContainer">

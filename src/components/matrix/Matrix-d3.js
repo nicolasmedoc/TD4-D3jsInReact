@@ -12,6 +12,12 @@ class MatrixD3{
     radius = this.cellSize / 2;
     fontSize = getDefaultFontSize();
     transitionDuration = 2000;
+    colorScheme = d3.schemeYlGnBu[9];
+    cellColorScale = d3.scaleQuantile(this.colorScheme);
+    cellSizeScale = d3.scaleLinear()
+        .range([2, this.radius-1])
+    ;
+
 
     constructor(el){
         this.el=el;
@@ -27,7 +33,7 @@ class MatrixD3{
             this.size.height = this.size.width;
         }
 
-        // get the effect size of the view by substracting the margin
+        // get the effect size of the view by subtracting the margin
         this.width = this.size.width - this.margin.left - this.margin.right;
         this.height = this.size.height - this.margin.top - this.margin.bottom;
 
@@ -39,50 +45,79 @@ class MatrixD3{
             .attr("class","matSvgG")
             .attr("transform", "translate(" + this.margin.left + "," + this.margin.top + ")");
         ;
+
+
     }
+
+    updateCells(selection){
+        selection.attr("transform",(cellData)=>{
+            return "translate("+(cellData.colPos*this.cellSize)+","+(cellData.rowPos*this.cellSize)+")"
+        })
+        ;
+        selection.select(".CellCircle")
+            .attr("r",(cellData)=>this.cellSizeScale(cellData.nbProductSold))
+            .attr("fill",(cellData) =>{
+                const color = this.cellColorScale(cellData.salesGrowth);
+                return color;
+            })
+            .attr("stroke-width",(cellData)=>{
+                return cellData.selected?2:0;
+            })
+        ;
+    }
+
 
     renderMatrix = function (matrixData, controllerMethods){
         // build the size scale from the data
         const minNbProductSold = d3.min(matrixData.genData.map(cellData=>cellData.nbProductSold));
         const maxNbProductSold = d3.max(matrixData.genData.map(cellData=>cellData.nbProductSold));
-        const cellSizeScale = d3.scaleLinear()
-            .domain([minNbProductSold, maxNbProductSold])
-            .range([2, this.radius-1])
-        ;
+        this.cellSizeScale.domain([minNbProductSold, maxNbProductSold])
         // build the color scale from the data
-        const colorScheme = d3.schemeYlGnBu[9];
-        const cellColorScale = d3.scaleQuantile(colorScheme);
-        cellColorScale.domain(matrixData.genData.map(cellData=>cellData.salesGrowth));
+        this.cellColorScale.domain(matrixData.genData.map(cellData=>cellData.salesGrowth));
 
-        // add the g and translate the position of cells
-        const cellG = this.matSvg.selectAll(".cellG")
+        this.matSvg.selectAll(".cellG")
+            // all elements with the class .cellG (empty the first time)
             .data(matrixData.genData,(cellData)=>cellData.index)
-            .enter()
-            .append("g")
-            .attr("class","cellG")
-            .attr("transform",(cellData)=>{
-                return "translate("+(cellData.colPos*this.cellSize)+", "+(cellData.rowPos*this.cellSize)+")"
-            })
-        ;
-        // render a rect as child of each element "g"
-        cellG.append("rect")
-            .attr("class","CellRect")
-            .attr("width",this.cellSize-1)
-            .attr("height",this.cellSize-1)
-            .attr("fill","lightGray")
-        ;
+            .join(
+                enter=>{
+                    // all data items to add:
+                    // doesn’exist in the select but exist in the new array
+                    const cellG=enter.append("g")
+                        .attr("class","cellG")
+                        .on("click", (event,cellData)=>{
+                            controllerMethods.handleOnClick(cellData);
+                        })
+                        .on("mouseenter",(event,cellData)=>{
+                            controllerMethods.handleOnMouseEnter(cellData);
+                        })
+                        .on("mouseleave",(event,cellData)=>{
+                            controllerMethods.handleOnMouseEnter();
+                        })
 
-        // render a circle as child of each element "g"
-        cellG.append("circle")
-            .attr("class","CellCircle")
-            .attr("cx",this.radius)
-            .attr("cy",this.radius)
-            .attr("r",(cellData)=>cellSizeScale(cellData.nbProductSold))
-            .attr("fill",(cellData) =>{
-                const color =  cellColorScale(cellData.salesGrowth);
-                return color;
-            })
-        ;
+                    ;
+                    // render rect as child of each element "g"
+                    cellG.append("rect")
+                        .attr("class","CellRect")
+                        .attr("width",this.cellSize-1)
+                        .attr("height",this.cellSize-1)
+                        .attr("fill","lightGray")
+                    ;
+                    // render circle as child of each element "g"
+                    cellG.append("circle")
+                        .attr("class","CellCircle")
+                        .attr("cx",this.radius)
+                        .attr("cy",this.radius)
+                        .attr("stroke","red")
+                    ;
+                    this.updateCells(cellG);
+                },
+                update=>{this.updateCells(update)},
+                exit =>{
+                    exit.remove()
+                    ;
+                }
+
+            )
     }
 
     clear = function(){

@@ -1,20 +1,19 @@
-import { useEffect, useContext } from "react";
-import { MatrixConfigContext, MatrixConfigDispatchContext } from "../../reducers/MatrixConfigContext";
-import { MatrixDataDispatchContext } from "../../reducers/MatrixDataContext";
+import { useEffect } from "react";
+import { useSelector, useDispatch } from "react-redux";
+import { generateByGenConfig } from "../../redux/MatrixSlice";
+import { updateNbRowsAndCols } from "../../redux/ConfigSlice";
 
 function ControlBar(){
-    const genConfig = useContext(MatrixConfigContext);
-    const configDispatch = useContext(MatrixConfigDispatchContext);
-    const dataDispatch = useContext(MatrixDataDispatchContext);
-
+    const dispatch = useDispatch();
+    const genConfig = useSelector(state=>state.config);
     const handleOnChangeNbRows = function(event){
         const nbRows = parseInt(event.target.value);
-        configDispatch({...genConfig, nbRows, type:"updateNbRowsAndCols"})
+        dispatch(updateNbRowsAndCols({ ...genConfig, nbRows }))
     }
 
     const handleOnChangeNbCols = function(event){
         const nbCols = parseInt(event.target.value);
-        configDispatch({...genConfig, nbCols, type:"updateNbRowsAndCols"})
+        dispatch(updateNbRowsAndCols({ ...genConfig, nbCols }))
     }
 
     const handleOnSubmit = function(event){
@@ -25,8 +24,8 @@ function ControlBar(){
         const form = event.target;
         const formData = new FormData(form);
         const formJSON = Object.fromEntries(formData.entries());
-    
-        dataDispatch({type:"generate", nbRows: parseInt(formJSON.nbRows), nbCols: parseInt(formJSON.nbCols)})
+
+        dispatch(generateByGenConfig({nbRows:parseInt(formJSON.nbRows), nbCols:parseInt(formJSON.nbCols)}));
     }
     
     useEffect(()=>{
