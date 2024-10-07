@@ -18,7 +18,18 @@ function Matrix(){
     const matrixD3Ref = useRef(null)
 
     const getCharSize = function(){
-        return {width:900, height:900};
+        // fixed size
+        // return {width:900, height:900};
+        // getting size from parent item
+        let width;// = 800;
+        let height;// = 100;
+        if(divContainerRef.current!==undefined){
+            width=divContainerRef.current.offsetWidth;
+            // width = '100%';
+            height=divContainerRef.current.offsetHeight;
+            // height = '100%';
+        }
+        return {width:width,height:height};
     }
 
     // did mount
