@@ -2,7 +2,7 @@ import './Matrix.css'
 import { useEffect, useRef } from 'react';
 import {useSelector, useDispatch} from 'react-redux'
 import { updateSelectedItem } from '../../redux/MatrixSlice';
-import { updateHoveredCell } from '../../redux/ConfigSlice';
+import { updateHoveredCell } from '../../redux/MatrixSyncSlice';
 
 import MatrixD3 from './Matrix-d3';
 
@@ -69,7 +69,7 @@ function Matrix(){
     },[matrixData,dispatch]);// if dependencies, useEffect is called after each data update, in our case only matrixData changes.
 
     return(
-        <div ref={divContainerRef} className="matrixDivContainer">
+        <div ref={divContainerRef} className="matrixDivContainer col2">
 
         </div>
     )

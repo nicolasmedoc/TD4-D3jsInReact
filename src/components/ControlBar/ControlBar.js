@@ -1,11 +1,12 @@
 import { useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { generateByGenConfig } from "../../redux/MatrixSlice";
+import { generateFromConfig } from "../../redux/MatrixSlice";
 import { updateNbRowsAndCols } from "../../redux/ConfigSlice";
 
 function ControlBar(){
     const dispatch = useDispatch();
     const genConfig = useSelector(state=>state.config);
+    const matrixSync = useSelector(state=>state.matrixSync);
     const handleOnChangeNbRows = function(event){
         const nbRows = parseInt(event.target.value);
         dispatch(updateNbRowsAndCols({ ...genConfig, nbRows }))
@@ -25,7 +26,7 @@ function ControlBar(){
         const formData = new FormData(form);
         const formJSON = Object.fromEntries(formData.entries());
 
-        dispatch(generateByGenConfig({nbRows:parseInt(formJSON.nbRows), nbCols:parseInt(formJSON.nbCols)}));
+        dispatch(generateFromConfig({nbRows:parseInt(formJSON.nbRows), nbCols:parseInt(formJSON.nbCols)}));
     }
     
     useEffect(()=>{
@@ -48,7 +49,7 @@ function ControlBar(){
                 <button type="submit">Generate</button>
             </form>
             <div>
-                {genConfig.hoveredCell?.index>=0?<p>Cell ({genConfig.hoveredCell.rowPos},{genConfig.hoveredCell.colPos}) hovered </p>:<p>Nothing hovered</p>}
+                {matrixSync.hoveredCell?.index>=0?<p>Cell ({matrixSync.hoveredCell.rowPos},{matrixSync.hoveredCell.colPos}) hovered </p>:<p>Nothing hovered</p>}
             </div>
         </>
     )

@@ -88,7 +88,7 @@ class VisD3 {
                     itemG.append("shape")
                     // ...
                     ;
-                    this.updateFunction1(cellG);
+                    this.updateFunction1(itemG);
                 },
                 update=>{this.updateFunction1(update)},
                 exit =>{

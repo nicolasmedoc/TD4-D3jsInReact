@@ -20,7 +20,7 @@ export const matrixSlice = createSlice({
   name: 'matrix',
   initialState: generateNewData(4,4),
   reducers: {
-    generateByGenConfig: (state, action) =>{
+    generateFromConfig: (state, action) =>{
         return generateNewData(action.payload.nbRows,action.payload.nbCols)
     },
     updateSelectedItem: (state, action) => {
@@ -37,6 +37,6 @@ export const matrixSlice = createSlice({
 })
 
 // Action creators are generated for each case reducer function
-export const { generateByGenConfig, updateSelectedItem } = matrixSlice.actions
+export const { generateFromConfig, updateSelectedItem } = matrixSlice.actions
 
 export default matrixSlice.reducer
