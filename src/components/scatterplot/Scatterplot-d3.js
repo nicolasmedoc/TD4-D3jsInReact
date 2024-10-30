@@ -49,7 +49,9 @@ class ScatterplotD3 {
 
     updatePoints(selection){
         // transform selection
-        selection.attr("transform", (itemData)=>{
+        selection
+            .transition().duration(500)
+            .attr("transform", (itemData)=>{
              // use scales to return shape position from data values
             const xPos = this.xScale(itemData.nbProductSold);
             const yPos = this.yScale(itemData.salesGrowth);
