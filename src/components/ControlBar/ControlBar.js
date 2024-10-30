@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { generateByGenConfig } from "../../redux/MatrixSlice";
+import { generateFromConfig } from "../../redux/MatrixSlice";
 import { updateNbRowsAndCols } from "../../redux/ConfigSlice";
 
 function ControlBar(){
@@ -25,7 +25,7 @@ function ControlBar(){
         const formData = new FormData(form);
         const formJSON = Object.fromEntries(formData.entries());
 
-        dispatch(generateByGenConfig({nbRows:parseInt(formJSON.nbRows), nbCols:parseInt(formJSON.nbCols)}));
+        dispatch(generateFromConfig({nbRows:parseInt(formJSON.nbRows), nbCols:parseInt(formJSON.nbCols)}));
     }
     
     useEffect(()=>{
