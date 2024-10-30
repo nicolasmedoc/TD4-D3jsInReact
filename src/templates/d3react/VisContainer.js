@@ -50,7 +50,7 @@ function VisContainer(){
     // did update, called each time dependencies change, dispatch remain stable over component cycles
     useEffect(()=>{
         console.log("VisContainer useEffect with dependency [visData,dispatch], called each time visData changes...");
-        const matrixD3 = visD3Ref.current;
+        const visD3 = visD3Ref.current;
 
         const handleOnEvent1 = function(payload){
             // do something
@@ -64,7 +64,7 @@ function VisContainer(){
             handleOnEvent1: handleOnEvent1,
             handleOnEvent2: handleOnEvent2,
         }
-        matrixD3.renderVis(visData,controllerMethods);
+        visD3.renderVis(visData,controllerMethods);
     },[visData,dispatch]);// if dependencies, useEffect is called after each data update, in our case only visData changes.
 
     return(
