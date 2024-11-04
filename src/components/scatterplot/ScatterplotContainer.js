@@ -1,6 +1,5 @@
 import './Scatterplot.css'
 import { useEffect, useRef } from 'react';
-import {useSelector, useDispatch} from 'react-redux'
 
 import ScatterplotD3 from './Scatterplot-d3';
 import {updateSelectedItem} from "../../redux/MatrixSlice";
@@ -9,8 +8,8 @@ import {updateHoveredCell} from "../../redux/MatrixSyncSlice";
 // TODO: import action methods from reducers
 
 function ScatterplotContainer(){
-    const matrixData = useSelector(state =>state.matrix)
-    const dispatch = useDispatch();
+    // get matrixData from the redux store
+    const matrixData = {}
 
     const xAttribute= "nbProductSold"
     const yAttribute= "salesGrowth"
@@ -55,16 +54,12 @@ function ScatterplotContainer(){
     // did update, called each time dependencies change, dispatch remain stable over component cycles
     useEffect(()=>{
         console.log("ScatterplotContainer useEffect with dependency [matrixData,dispatch], called each time matrixData changes...");
-        const scatterplotD3 = scatterplotD3Ref.current;
 
         const handleOnClick = function(cellData){
-            dispatch(updateSelectedItem(cellData));
         }
         const handleOnMouseEnter = function(cellData){
-            dispatch(updateHoveredCell(cellData))
         }
         const handleOnMouseLeave = function(){
-            dispatch(updateHoveredCell({}))
         }
 
         const controllerMethods={
@@ -72,8 +67,11 @@ function ScatterplotContainer(){
             handleOnMouseEnter,
             handleOnMouseLeave
         }
-        scatterplotD3.renderScatterplot(matrixData.genData,xAttribute,yAttribute,controllerMethods);
-    },[matrixData,dispatch]);// if dependencies, useEffect is called after each data update, in our case only matrixData changes.
+
+        // get the current instance of scatterplotD3 from the Ref...
+        // call renderScatterplot of ScatterplotD3...;
+
+    },[matrixData]);// if dependencies, useEffect is called after each data update, in our case only matrixData changes.
 
     return(
         <div ref={divContainerRef} className="scatterplotDivContainer col2">

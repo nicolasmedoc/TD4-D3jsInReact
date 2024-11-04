@@ -65,12 +65,9 @@ class ScatterplotD3 {
         // transform selection
         selection
             .transition().duration(this.transitionDuration)
-            .attr("transform", (item)=>{
-                // use scales to return shape position from data values
-                const xPos = this.xScale(item[xAttribute]);
-                const yPos = this.yScale(item[yAttribute]);
-                return "translate("+xPos+","+yPos+")";
-            })
+            // .attr("transform", (item)=>{
+            //     // use scales to return shape position from data values
+            // })
         this.changeBorderAndOpacity(selection)
     }
 
@@ -90,23 +87,11 @@ class ScatterplotD3 {
     }
 
     updateAxis = function(visData,xAttribute,yAttribute){
-        const minX = d3.min(visData.map(item=>item[xAttribute]));
-        const maxX = d3.max(visData.map(item=>item[xAttribute]));
-        // this.xScale.domain([0, maxX]);
-        this.xScale.domain([minX, maxX]);
-        const minY = d3.min(visData.map(item=>item[yAttribute]));
-        const maxY = d3.max(visData.map(item=>item[yAttribute]));
-        // this.yScale.domain([0, maxY]);
-        this.yScale.domain([minY, maxY]);
+        // compute min max using d3.min/max(item=>item.attribute)
+        // this.xScale.domain(...);
+        // this.yScale.domain(...);
 
-        this.matSvg.select(".xAxisG")
-            .transition().duration(this.transitionDuration)
-            .call(d3.axisBottom(this.xScale))
-        ;
-        this.matSvg.select(".yAxisG")
-            .transition().duration(this.transitionDuration)
-            .call(d3.axisLeft(this.yScale))
-        ;
+        // create axis with computed scales
     }
 
 
