@@ -93,13 +93,12 @@ class ScatterplotD3 {
         // build the size scales and x,y axis
         this.updateAxis(visData);
 
-        this.matSvg.selectAll(".pointG")
-            // all elements with the class .cellG (empty the first time)
+        this.matSvg.selectAll(".pointG") // all elements with the class .cellG (empty the first time)
             .data(visData.genData,(itemData)=>itemData.index)
             .join(
                 enter=>{
-                    // all data items to add:
-                    // doesn’exist in the select but exist in the new array
+                    // behavior for for all data items to add:
+                    // (doesn't exist in the select but exist in the new array)
                     const itemG=enter.append("g")
                         .attr("class","pointG")
                         .on("click", (event,itemData)=>{

@@ -10,7 +10,6 @@ import {updateHoveredCell} from "../../redux/MatrixSyncSlice";
 
 function ScatterplotContainer(){
     const matrixData = useSelector(state =>state.matrix)
-    const matrixSync = useSelector(state =>state.matrixSync)
     const dispatch = useDispatch();
 
     // every time the component re-render

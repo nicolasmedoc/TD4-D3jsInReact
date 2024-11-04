@@ -17,6 +17,7 @@ class VisD3 {
     // ;
 
 
+    // the constructor takes the element to add the SVG within it
     constructor(el){
         this.el=el;
     };
