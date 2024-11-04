@@ -1,5 +1,6 @@
 import './App.css';
 import Matrix from './components/matrix/Matrix';
+import ScatterplotContainer from "./components/scatterplot/ScatterplotContainer";
 import ControlBar from './components/ControlBar/ControlBar';
 import { useEffect} from 'react';
 
@@ -17,8 +18,9 @@ function App() {
         <div id="control-bar-container">
           <ControlBar/>
         </div>  
-        <div id="view-container">
+        <div id="view-container" className="row">
           <Matrix/>
+          <ScatterplotContainer/>
         </div>
     </div>
   );

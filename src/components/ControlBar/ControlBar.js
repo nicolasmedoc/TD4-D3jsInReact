@@ -6,6 +6,7 @@ import { updateNbRowsAndCols } from "../../redux/ConfigSlice";
 function ControlBar(){
     const dispatch = useDispatch();
     const genConfig = useSelector(state=>state.config);
+    const matrixSync = useSelector(state=>state.matrixSync);
     const handleOnChangeNbRows = function(event){
         const nbRows = parseInt(event.target.value);
         dispatch(updateNbRowsAndCols({ ...genConfig, nbRows }))
@@ -48,7 +49,7 @@ function ControlBar(){
                 <button type="submit">Generate</button>
             </form>
             <div>
-                {genConfig.hoveredCell?.index>=0?<p>Cell ({genConfig.hoveredCell.rowPos},{genConfig.hoveredCell.colPos}) hovered </p>:<p>Nothing hovered</p>}
+                {matrixSync.hoveredCell?.index>=0?<p>Cell ({matrixSync.hoveredCell.rowPos},{matrixSync.hoveredCell.colPos}) hovered </p>:<p>Nothing hovered</p>}
             </div>
         </>
     )

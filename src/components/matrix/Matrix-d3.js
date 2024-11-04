@@ -19,6 +19,7 @@ class MatrixD3{
     ;
 
 
+    // the constructor takes the element to add the SVG within it
     constructor(el){
         this.el=el;
     };
@@ -65,7 +66,6 @@ class MatrixD3{
             })
         ;
     }
-
 
     renderMatrix = function (matrixData, controllerMethods){
         // build the size scale from the data

@@ -5,19 +5,15 @@ export const configSlice = createSlice({
   initialState: {
     nbRows: 4,
     nbCols: 4,
-    hoveredCell:{},
   },
   reducers: {
     updateNbRowsAndCols: (state, action) => {
       return {...state, nbRows:action.payload.nbRows, nbCols:action.payload.nbCols};
     },
-    updateHoveredCell: (state, action) => {
-        return {...state, hoveredCell:action.payload};
-    },
   }
 })
 
 // Action creators are generated for each case reducer function
-export const { updateNbRowsAndCols, updateHoveredCell } = configSlice.actions
+export const { updateNbRowsAndCols} = configSlice.actions
 
 export default configSlice.reducer
