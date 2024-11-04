@@ -12,6 +12,9 @@ function ScatterplotContainer(){
     const matrixData = useSelector(state =>state.matrix)
     const dispatch = useDispatch();
 
+    const xAttribute= "nbProductSold"
+    const yAttribute= "salesGrowth"
+
     // every time the component re-render
     useEffect(()=>{
         console.log("ScatterplotContainer useEffect (called each time matrix re-renders)");
@@ -69,7 +72,7 @@ function ScatterplotContainer(){
             handleOnMouseEnter,
             handleOnMouseLeave
         }
-        scatterplotD3.renderScatterplot(matrixData,controllerMethods);
+        scatterplotD3.renderScatterplot(matrixData.genData,xAttribute,yAttribute,controllerMethods);
     },[matrixData,dispatch]);// if dependencies, useEffect is called after each data update, in our case only matrixData changes.
 
     return(

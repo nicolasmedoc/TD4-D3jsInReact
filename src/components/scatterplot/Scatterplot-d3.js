@@ -8,8 +8,9 @@ class ScatterplotD3 {
     width;
     matSvg;
     // add specific class properties used for the vis render/updates
+    defaultOpacity=0.3;
+    transitionDuration=1000;
     circleRadius = 3;
-    selectedCircleRadius = 10;
     xScale;
     yScale;
 
@@ -35,7 +36,7 @@ class ScatterplotD3 {
         ;
 
         this.xScale = d3.scaleLinear().range([0,this.width]);
-        this.yScale = d3.scaleLinear().range([0,this.height]);
+        this.yScale = d3.scaleLinear().range([this.height,0]);
 
         // build xAxisG
         this.matSvg.append("g")
@@ -47,81 +48,97 @@ class ScatterplotD3 {
         ;
     }
 
-    updatePoints(selection){
-        // transform selection
-        selection
-            .transition().duration(500)
-            .attr("transform", (itemData)=>{
-             // use scales to return shape position from data values
-            const xPos = this.xScale(itemData.nbProductSold);
-            const yPos = this.yScale(itemData.salesGrowth);
-            return "translate("+xPos+","+yPos+")";
+    changeBorderAndOpacity(selection){
+        selection.style("opacity", (item)=>{
+            return item.selected?1:this.defaultOpacity;
         })
+        ;
 
-        selection.select(".pointCircle")
-            .attr("stroke-width",(cellData)=>{
-                return cellData.selected?2:0;
+        selection.select(".dotCircle")
+            .attr("stroke-width",(item)=>{
+                return item.selected?2:0;
             })
-            .attr("r",(cellData)=>{
-                return cellData.selected?this.selectedCircleRadius:this.circleRadius;
-            })
-
         ;
     }
 
+    updateDots(selection,xAttribute,yAttribute){
+        // transform selection
+        selection
+            .transition().duration(this.transitionDuration)
+            .attr("transform", (item)=>{
+                // use scales to return shape position from data values
+                const xPos = this.xScale(item[xAttribute]);
+                const yPos = this.yScale(item[yAttribute]);
+                return "translate("+xPos+","+yPos+")";
+            })
+        this.changeBorderAndOpacity(selection)
+    }
 
-    updateAxis = function(visData){
-        const minNbProductSold = d3.min(visData.genData.map(cellData=>cellData.nbProductSold));
-        const maxNbProductSold = d3.max(visData.genData.map(cellData=>cellData.nbProductSold));
-        this.xScale.domain([minNbProductSold, maxNbProductSold]);
-        const minSalesGrowth = d3.min(visData.genData.map(cellData=>cellData.salesGrowth));
-        const maxSalesGrowth = d3.max(visData.genData.map(cellData=>cellData.salesGrowth));
-        this.yScale.domain([minSalesGrowth, maxSalesGrowth]);
+    highlightSelectedItems(selectedItems){
+        // this.changeBorderAndOpacity(updateSelection);
+        this.matSvg.selectAll(".dotG")
+            // all elements with the class .cellG (empty the first time)
+            .data(selectedItems,(itemData)=>itemData.index)
+            .join(
+                enter=>enter,
+                update=>{
+                    this.changeBorderAndOpacity(update);
+                },
+                exit => exit
+            )
+        ;
+    }
+
+    updateAxis = function(visData,xAttribute,yAttribute){
+        const minX = d3.min(visData.map(item=>item[xAttribute]));
+        const maxX = d3.max(visData.map(item=>item[xAttribute]));
+        // this.xScale.domain([0, maxX]);
+        this.xScale.domain([minX, maxX]);
+        const minY = d3.min(visData.map(item=>item[yAttribute]));
+        const maxY = d3.max(visData.map(item=>item[yAttribute]));
+        // this.yScale.domain([0, maxY]);
+        this.yScale.domain([minY, maxY]);
 
         this.matSvg.select(".xAxisG")
-            .transition().duration(500)
+            .transition().duration(this.transitionDuration)
             .call(d3.axisBottom(this.xScale))
         ;
         this.matSvg.select(".yAxisG")
-            .transition().duration(500)
+            .transition().duration(this.transitionDuration)
             .call(d3.axisLeft(this.yScale))
         ;
     }
 
 
-    renderScatterplot = function (visData, controllerMethods){
+    renderScatterplot = function (visData, xAttribute, yAttribute, controllerMethods){
         // build the size scales and x,y axis
-        this.updateAxis(visData);
+        this.updateAxis(visData,xAttribute,yAttribute);
 
-        this.matSvg.selectAll(".pointG") // all elements with the class .cellG (empty the first time)
-            .data(visData.genData,(itemData)=>itemData.index)
+        this.matSvg.selectAll(".dotG")
+            // all elements with the class .cellG (empty the first time)
+            .data(visData,(itemData)=>itemData.index)
             .join(
                 enter=>{
-                    // behavior for for all data items to add:
-                    // (doesn't exist in the select but exist in the new array)
+                    // all data items to add:
+                    // doesn’exist in the select but exist in the new array
                     const itemG=enter.append("g")
-                        .attr("class","pointG")
+                        .attr("class","dotG")
+                        .style("opacity",this.defaultOpacity)
                         .on("click", (event,itemData)=>{
                             controllerMethods.handleOnClick(itemData);
-                        })
-                        .on("mouseenter",(event,cellData)=>{
-                            controllerMethods.handleOnMouseEnter(cellData);
-                        })
-                        .on("mouseleave",(event,cellData)=>{
-                            controllerMethods.handleOnMouseEnter();
                         })
                     ;
                     // render element as child of each element "g"
                     itemG.append("circle")
-                        .attr("class","pointCircle")
-                        .attr("cx",this.circleRadius/2)
-                        .attr("cy",this.circleRadius/2)
+                        .attr("class","dotCircle")
                         .attr("r",this.circleRadius)
                         .attr("stroke","red")
                     ;
-                    this.updatePoints(itemG);
+                    this.updateDots(itemG,xAttribute,yAttribute);
                 },
-                update=>{this.updatePoints(update)},
+                update=>{
+                    this.updateDots(update,xAttribute,yAttribute)
+                },
                 exit =>{
                     exit.remove()
                     ;
